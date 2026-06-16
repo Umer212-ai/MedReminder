@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "251324704090",
+    "firebase_url": "https://medreminder-7aa68-default-rtdb.firebaseio.com",
+    "project_id": "medreminder-7aa68",
+    "storage_bucket": "medreminder-7aa68.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251324704090:android:846a40c79a6b5604147f63",
+        "android_client_info": {
+          "package_name": "com.example.thirdly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251324704090-s487kbargr10af8a4pnhj8d631qnvcrk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCey7a33svYMAvKXAZBCg73fPQ69uJlwWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251324704090-s487kbargr10af8a4pnhj8d631qnvcrk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
