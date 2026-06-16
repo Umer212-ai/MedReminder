@@ -43,7 +43,8 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
 
   final HireRequestService _hireRequestService = HireRequestService();
   final AppointmentService _appointmentService = AppointmentService();
-  final NotificationHelperService _notificationHelper = NotificationHelperService();
+  final NotificationHelperService _notificationHelper =
+      NotificationHelperService();
 
   List<HireRequestModel> _hireRequests = [];
   List<AppointmentModel> _appointments = [];
@@ -68,7 +69,7 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
       curve: Curves.easeOut,
     );
     _loadHireRequestsAndAppointments();
-    
+
     // Initialize CaregiverDashboardProvider with caregiver's UID
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -85,7 +86,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
     final uid = auth.uid;
     if (uid == null) return;
 
-    _hireRequestsSub = _hireRequestService.watchCaregiverRequests(uid).listen((requests) {
+    _hireRequestsSub = _hireRequestService.watchCaregiverRequests(uid).listen((
+      requests,
+    ) {
       if (mounted) {
         setState(() {
           _hireRequests = requests;
@@ -93,7 +96,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
       }
     });
 
-    _appointmentsSub = _appointmentService.watchDoctorAppointments(uid).listen((appointments) {
+    _appointmentsSub = _appointmentService.watchDoctorAppointments(uid).listen((
+      appointments,
+    ) {
       if (mounted) {
         setState(() {
           _appointments = appointments;
@@ -101,7 +106,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
       }
     });
 
-    _notificationsSub = _notificationHelper.getUserNotifications(uid).listen((notifications) {
+    _notificationsSub = _notificationHelper.getUserNotifications(uid).listen((
+      notifications,
+    ) {
       if (mounted) {
         setState(() {
           _notifications = notifications;
@@ -132,8 +139,10 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('Sign out?',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Sign out?',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Text(
           'You will need to sign in again to monitor your patients.',
           style: GoogleFonts.poppins(),
@@ -141,14 +150,20 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: AppColors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Sign out',
-                style: GoogleFonts.poppins(
-                    color: AppColors.error, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Sign out',
+              style: GoogleFonts.poppins(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -181,10 +196,8 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
           ],
           child: PatientDetailScreen(patientLink: link),
         ),
-        transitionsBuilder: (ctx, animation, _, child) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
+        transitionsBuilder: (ctx, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
       ),
     );
   }
@@ -241,7 +254,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Appointment with ${appointment.patientName} confirmed'),
+            content: Text(
+              'Appointment with ${appointment.patientName} confirmed',
+            ),
             backgroundColor: AppColors.success,
           ),
         );
@@ -301,9 +316,20 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
     final todayStart = DateTime(now.year, now.month, now.day);
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-    final pendingApps = _appointments.where((a) => a.status == 'pending').toList();
-    final todayApps = _appointments.where((a) => a.status == 'confirmed' && a.dateTime.isAfter(todayStart) && a.dateTime.isBefore(todayEnd)).toList();
-    final upcomingApps = _appointments.where((a) => a.status == 'confirmed' && a.dateTime.isAfter(todayEnd)).toList();
+    final pendingApps = _appointments
+        .where((a) => a.status == 'pending')
+        .toList();
+    final todayApps = _appointments
+        .where(
+          (a) =>
+              a.status == 'confirmed' &&
+              a.dateTime.isAfter(todayStart) &&
+              a.dateTime.isBefore(todayEnd),
+        )
+        .toList();
+    final upcomingApps = _appointments
+        .where((a) => a.status == 'confirmed' && a.dateTime.isAfter(todayEnd))
+        .toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -317,8 +343,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
               expandedHeight: 240,
               floating: false,
               pinned: true,
-              backgroundColor:
-                  isDark ? AppColors.backgroundDark : AppColors.primary,
+              backgroundColor: isDark
+                  ? AppColors.backgroundDark
+                  : AppColors.primary,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -358,13 +385,14 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                   ),
                                   child: CircleAvatar(
                                     radius: 28,
-                                    backgroundColor:
-                                        Colors.white.withValues(alpha: 0.25),
+                                    backgroundColor: Colors.white.withValues(
+                                      alpha: 0.25,
+                                    ),
                                     child: Text(
                                       caregiverUser?.fullName.isNotEmpty == true
                                           ? caregiverUser!.fullName
-                                              .substring(0, 1)
-                                              .toUpperCase()
+                                                .substring(0, 1)
+                                                .toUpperCase()
                                           : 'C',
                                       style: GoogleFonts.poppins(
                                         color: Colors.white,
@@ -408,8 +436,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                   builder: (context, mode, _) {
                                     return Container(
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.white.withValues(alpha: 0.15),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.15,
+                                        ),
                                         shape: BoxShape.circle,
                                       ),
                                       child: IconButton(
@@ -423,8 +452,8 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                         onPressed: () {
                                           themeNotifier.value =
                                               mode == ThemeMode.light
-                                                  ? ThemeMode.dark
-                                                  : ThemeMode.light;
+                                              ? ThemeMode.dark
+                                              : ThemeMode.light;
                                         },
                                       ),
                                     );
@@ -434,13 +463,15 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                 // Sign out
                                 Container(
                                   decoration: BoxDecoration(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.15),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                     shape: BoxShape.circle,
                                   ),
                                   child: IconButton(
-                                    icon: const Icon(Icons.logout_rounded,
-                                        color: Colors.white, size: 20),
+                                    icon: const Icon(
+                                      Icons.logout_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                     onPressed: () => _signOut(context),
                                     tooltip: 'Sign Out',
                                   ),
@@ -449,18 +480,21 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                 // Edit Profile
                                 Container(
                                   decoration: BoxDecoration(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.15),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                     shape: BoxShape.circle,
                                   ),
                                   child: IconButton(
-                                    icon: const Icon(Icons.edit_rounded,
-                                        color: Colors.white, size: 20),
+                                    icon: const Icon(
+                                      Icons.edit_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => const CaregiverProfileEditScreen(),
+                                          builder: (_) =>
+                                              const CaregiverProfileEditScreen(),
                                         ),
                                       );
                                     },
@@ -487,13 +521,14 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.greenAccent
-                                              .withValues(alpha: 0.6),
+                                          color: Colors.greenAccent.withValues(
+                                            alpha: 0.6,
+                                          ),
                                           blurRadius:
                                               6 * _pulseController.value,
                                           spreadRadius:
                                               2 * _pulseController.value,
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -530,13 +565,21 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
                   const SizedBox(height: 28),
 
                   // ── Quick Actions ──────────────────────────────────
-                  _sectionHeader('Quick Actions', Icons.bolt_rounded, AppColors.warning),
+                  _sectionHeader(
+                    'Quick Actions',
+                    Icons.bolt_rounded,
+                    AppColors.warning,
+                  ),
                   const SizedBox(height: 12),
                   _buildQuickActions(context),
                   const SizedBox(height: 28),
 
                   // ── Summary Statistics ───────────────────────────
-                  _sectionHeader('Dashboard Overview', Icons.analytics_rounded, AppColors.primary),
+                  _sectionHeader(
+                    'Dashboard Overview',
+                    Icons.analytics_rounded,
+                    AppColors.primary,
+                  ),
                   const SizedBox(height: 12),
                   _AnimatedStatRow(
                     patientsCount: patientCount,
@@ -548,52 +591,79 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
 
                   // ── Pending Hire Requests ─────────────────────────
                   if (_hireRequests.isNotEmpty) ...[
-                    _sectionHeader('Pending Hire Requests', Icons.person_add_rounded, AppColors.primary),
+                    _sectionHeader(
+                      'Pending Hire Requests',
+                      Icons.person_add_rounded,
+                      AppColors.primary,
+                    ),
                     const SizedBox(height: 12),
-                    ..._hireRequests.take(3).map((request) => _HireRequestCard(
-                          request: request,
-                          onAccept: () => _acceptHireRequest(request),
-                          onReject: () => _rejectHireRequest(request),
-                        )),
+                    ..._hireRequests
+                        .take(3)
+                        .map(
+                          (request) => _HireRequestCard(
+                            request: request,
+                            onAccept: () => _acceptHireRequest(request),
+                            onReject: () => _rejectHireRequest(request),
+                          ),
+                        ),
                     const SizedBox(height: 28),
                   ],
 
                   // ── Today's Appointments ───────────────────────────
                   if (todayApps.isNotEmpty) ...[
-                    _sectionHeader("Today's Appointments", Icons.today_rounded, AppColors.success),
+                    _sectionHeader(
+                      "Today's Appointments",
+                      Icons.today_rounded,
+                      AppColors.success,
+                    ),
                     const SizedBox(height: 12),
-                    ...todayApps.map((appointment) => _ConfirmedAppointmentCard(
-                          appointment: appointment,
-                        )),
+                    ...todayApps.map(
+                      (appointment) =>
+                          _ConfirmedAppointmentCard(appointment: appointment),
+                    ),
                     const SizedBox(height: 28),
                   ],
 
                   // ── Upcoming Appointments ──────────────────────────
                   if (upcomingApps.isNotEmpty) ...[
-                    _sectionHeader('Upcoming Appointments', Icons.calendar_month_rounded, AppColors.secondary),
+                    _sectionHeader(
+                      'Upcoming Appointments',
+                      Icons.calendar_month_rounded,
+                      AppColors.secondary,
+                    ),
                     const SizedBox(height: 12),
-                    ...upcomingApps.map((appointment) => _ConfirmedAppointmentCard(
-                          appointment: appointment,
-                        )),
+                    ...upcomingApps.map(
+                      (appointment) =>
+                          _ConfirmedAppointmentCard(appointment: appointment),
+                    ),
                     const SizedBox(height: 28),
                   ],
 
                   // ── Pending Appointment Requests ────────────────────
                   if (pendingApps.isNotEmpty) ...[
-                    _sectionHeader('Pending Appointment Requests', Icons.calendar_today_rounded, AppColors.secondary),
+                    _sectionHeader(
+                      'Pending Appointment Requests',
+                      Icons.calendar_today_rounded,
+                      AppColors.secondary,
+                    ),
                     const SizedBox(height: 12),
-                    ...pendingApps.map((appointment) => _AppointmentCard(
-                          appointment: appointment,
-                          onConfirm: () => _confirmAppointment(appointment),
-                          onDecline: () => _declineAppointment(appointment),
-                        )),
+                    ...pendingApps.map(
+                      (appointment) => _AppointmentCard(
+                        appointment: appointment,
+                        onConfirm: () => _confirmAppointment(appointment),
+                        onDecline: () => _declineAppointment(appointment),
+                      ),
+                    ),
                     const SizedBox(height: 28),
                   ],
 
                   // ── Critical Alerts ─────────────────────────────
                   if (alerts.isNotEmpty) ...[
-                    _sectionHeader('Critical Alerts', Icons.warning_amber_rounded,
-                        AppColors.error),
+                    _sectionHeader(
+                      'Critical Alerts',
+                      Icons.warning_amber_rounded,
+                      AppColors.error,
+                    ),
                     const SizedBox(height: 12),
                     ...alerts.take(5).map((alert) => _AlertCard(alert: alert)),
                     const SizedBox(height: 28),
@@ -601,41 +671,56 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
 
                   // ── Recent Notifications ───────────────────────────
                   if (_notifications.isNotEmpty) ...[
-                    _sectionHeader('Recent Notifications', Icons.notifications_active_rounded, AppColors.purple),
+                    _sectionHeader(
+                      'Recent Notifications',
+                      Icons.notifications_active_rounded,
+                      AppColors.purple,
+                    ),
                     const SizedBox(height: 12),
-                    ..._notifications.take(5).map((n) => _DashboardNotificationTile(notification: n)),
+                    ..._notifications
+                        .take(5)
+                        .map(
+                          (n) => _DashboardNotificationTile(notification: n),
+                        ),
                     const SizedBox(height: 28),
                   ],
 
                   // ── Monitored Patients ──────────────────────────
-                  _sectionHeader('Monitored Patients',
-                      Icons.people_alt_rounded, AppColors.primary),
+                  _sectionHeader(
+                    'Monitored Patients',
+                    Icons.people_alt_rounded,
+                    AppColors.primary,
+                  ),
                   const SizedBox(height: 12),
                   if (provider.isLoading)
                     const Center(
                       child: Padding(
                         padding: EdgeInsets.all(32),
                         child: CircularProgressIndicator(
-                            color: AppColors.primary),
+                          color: AppColors.primary,
+                        ),
                       ),
                     )
                   else if (patients.isEmpty)
-                    _EmptyStateCard(
-                        email: caregiverUser?.email ?? '')
+                    _EmptyStateCard(email: caregiverUser?.email ?? '')
                   else
-                    ...patients.map((link) => _PatientCard(
-                          link: link,
-                          status: provider.getPatientStatus(link.patientId),
-                          onDetails: () =>
-                              _openPatientDetail(context, link),
-                        )),
+                    ...patients.map(
+                      (link) => _PatientCard(
+                        link: link,
+                        status: provider.getPatientStatus(link.patientId),
+                        onDetails: () => _openPatientDetail(context, link),
+                      ),
+                    ),
 
                   const SizedBox(height: 28),
 
                   // ── Recent Activity ─────────────────────────────
                   if (activities.isNotEmpty) ...[
-                    _sectionHeader('Recent Activity',
-                        Icons.timeline_rounded, AppColors.secondary),
+                    _sectionHeader(
+                      'Recent Activity',
+                      Icons.timeline_rounded,
+                      AppColors.secondary,
+                    ),
                     const SizedBox(height: 12),
                     ...activities.take(8).map((a) => _ActivityTile(item: a)),
                     const SizedBox(height: 28),
@@ -643,10 +728,15 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
 
                   // ── Upcoming Medicines ──────────────────────────
                   if (upcoming.isNotEmpty) ...[
-                    _sectionHeader('Upcoming Medicines',
-                        Icons.schedule_rounded, AppColors.purple),
+                    _sectionHeader(
+                      'Upcoming Medicines',
+                      Icons.schedule_rounded,
+                      AppColors.purple,
+                    ),
                     const SizedBox(height: 12),
-                    ...upcoming.take(6).map((item) => _UpcomingMedicineTile(item: item)),
+                    ...upcoming
+                        .take(6)
+                        .map((item) => _UpcomingMedicineTile(item: item)),
                     const SizedBox(height: 28),
                   ],
 
@@ -713,7 +803,9 @@ class _AnimatedStatRowState extends State<_AnimatedStatRow>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900));
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _ctrl.forward();
   }
@@ -831,16 +923,18 @@ class _StatCard extends StatelessWidget {
                 Text(
                   label,
                   style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textLight),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textLight,
+                  ),
                 ),
                 Text(
                   value,
                   style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
                 ),
               ],
             ),
@@ -881,9 +975,7 @@ class _AlertCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isCritical
-                  ? Icons.error_rounded
-                  : Icons.warning_amber_rounded,
+              isCritical ? Icons.error_rounded : Icons.warning_amber_rounded,
               color: color,
               size: 20,
             ),
@@ -904,7 +996,9 @@ class _AlertCard extends StatelessWidget {
                 Text(
                   DateFormat('h:mm a').format(alert.timestamp),
                   style: GoogleFonts.poppins(
-                      fontSize: 11, color: AppColors.textLight),
+                    fontSize: 11,
+                    color: AppColors.textLight,
+                  ),
                 ),
               ],
             ),
@@ -918,10 +1012,11 @@ class _AlertCard extends StatelessWidget {
             child: Text(
               isCritical ? 'CRITICAL' : 'WARN',
               style: GoogleFonts.poppins(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: 0.5),
+                fontSize: 9,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
         ],
@@ -990,7 +1085,8 @@ class _PatientCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
             border: Border.all(
               color: statusColor.withValues(
-                  alpha: status == 'Stable' ? 0.08 : 0.25),
+                alpha: status == 'Stable' ? 0.08 : 0.25,
+              ),
             ),
             boxShadow: [
               BoxShadow(
@@ -1022,9 +1118,10 @@ class _PatientCard extends StatelessWidget {
                               ? link.patientName[0].toUpperCase()
                               : 'P',
                           style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -1036,13 +1133,16 @@ class _PatientCard extends StatelessWidget {
                           Text(
                             link.patientName,
                             style: GoogleFonts.poppins(
-                                fontSize: 17, fontWeight: FontWeight.bold),
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             '${link.relation}  •  ${link.memberAge} Years',
                             style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: AppColors.textSecondary),
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ],
                       ),
@@ -1050,12 +1150,15 @@ class _PatientCard extends StatelessWidget {
                     // Status badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: statusColor.withValues(alpha: 0.25)),
+                          color: statusColor.withValues(alpha: 0.25),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -1065,9 +1168,10 @@ class _PatientCard extends StatelessWidget {
                           Text(
                             status,
                             style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: statusColor),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: statusColor,
+                            ),
                           ),
                         ],
                       ),
@@ -1082,17 +1186,22 @@ class _PatientCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Today\'s Adherence',
-                        style: GoogleFonts.poppins(
-                            fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Today\'s Adherence',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(
                       hasDoses
                           ? '${link.todayTaken} / ${link.todayTotal} medicines taken'
                           : 'No schedule today',
                       style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600),
+                        fontSize: 11,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -1136,29 +1245,32 @@ class _PatientCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _MiniVital(
-                              label: 'Pulse',
-                              value: hr?.value ?? '—',
-                              unit: 'bpm',
-                              icon: Icons.favorite_rounded,
-                              color: AppColors.primary),
+                            label: 'Pulse',
+                            value: hr?.value ?? '—',
+                            unit: 'bpm',
+                            icon: Icons.favorite_rounded,
+                            color: AppColors.primary,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: _MiniVital(
-                              label: 'BP',
-                              value: bp?.value ?? '—',
-                              unit: 'mmHg',
-                              icon: Icons.monitor_heart_rounded,
-                              color: AppColors.success),
+                            label: 'BP',
+                            value: bp?.value ?? '—',
+                            unit: 'mmHg',
+                            icon: Icons.monitor_heart_rounded,
+                            color: AppColors.success,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: _MiniVital(
-                              label: 'Sugar',
-                              value: sg?.value ?? '—',
-                              unit: 'mg/dL',
-                              icon: Icons.opacity_rounded,
-                              color: AppColors.secondary),
+                            label: 'Sugar',
+                            value: sg?.value ?? '—',
+                            unit: 'mg/dL',
+                            icon: Icons.opacity_rounded,
+                            color: AppColors.secondary,
+                          ),
                         ),
                       ],
                     );
@@ -1173,15 +1285,20 @@ class _PatientCard extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onDetails,
                         icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                        label: Text('Open Details',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold, fontSize: 13)),
+                        label: Text(
+                          'Open Details',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
@@ -1190,17 +1307,25 @@ class _PatientCard extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: onDetails,
                       icon: const Icon(Icons.analytics_outlined, size: 16),
-                      label: Text('Records',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold, fontSize: 12)),
+                      label: Text(
+                        'Records',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         side: BorderSide(
-                            color: AppColors.primary.withValues(alpha: 0.4)),
+                          color: AppColors.primary.withValues(alpha: 0.4),
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
                       ),
                     ),
                   ],
@@ -1250,11 +1375,14 @@ class _MiniVital extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(label,
-                    style: GoogleFonts.poppins(
-                        fontSize: 9,
-                        color: AppColors.textLight,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 9,
+                    color: AppColors.textLight,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text(
                   value != '—' ? '$value $unit' : '—',
                   style: GoogleFonts.poppins(
@@ -1336,7 +1464,8 @@ class _ActivityTile extends StatelessWidget {
                 color: theme.cardTheme.color,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: AppColors.textLight.withValues(alpha: 0.08)),
+                  color: AppColors.textLight.withValues(alpha: 0.08),
+                ),
               ),
               child: Row(
                 children: [
@@ -1344,14 +1473,18 @@ class _ActivityTile extends StatelessWidget {
                     child: Text(
                       item.message,
                       style: GoogleFonts.poppins(
-                          fontSize: 12, fontWeight: FontWeight.w500),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     DateFormat('h:mm a').format(item.timestamp),
                     style: GoogleFonts.poppins(
-                        fontSize: 10, color: AppColors.textLight),
+                      fontSize: 10,
+                      color: AppColors.textLight,
+                    ),
                   ),
                 ],
               ),
@@ -1379,8 +1512,7 @@ class _UpcomingMedicineTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-            color: AppColors.purple.withValues(alpha: 0.15)),
+        border: Border.all(color: AppColors.purple.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
@@ -1390,8 +1522,11 @@ class _UpcomingMedicineTile extends StatelessWidget {
               color: AppColors.purple.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.medication_rounded,
-                color: AppColors.purple, size: 20),
+            child: const Icon(
+              Icons.medication_rounded,
+              color: AppColors.purple,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1401,26 +1536,30 @@ class _UpcomingMedicineTile extends StatelessWidget {
                 Text(
                   item.patientName,
                   style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w600),
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   item.medicineName,
                   style: GoogleFonts.poppins(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   item.dosage,
                   style: GoogleFonts.poppins(
-                      fontSize: 11, color: AppColors.textLight),
+                    fontSize: 11,
+                    color: AppColors.textLight,
+                  ),
                 ),
               ],
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.purple.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -1428,9 +1567,10 @@ class _UpcomingMedicineTile extends StatelessWidget {
             child: Text(
               item.time,
               style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.purple),
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppColors.purple,
+              ),
             ),
           ),
         ],
@@ -1461,9 +1601,10 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    _floatAnim = Tween<double>(begin: -6, end: 6).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
+    _floatAnim = Tween<double>(
+      begin: -6,
+      end: 6,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -1483,8 +1624,7 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(
-            color: AppColors.textLight.withValues(alpha: 0.12)),
+        border: Border.all(color: AppColors.textLight.withValues(alpha: 0.12)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
@@ -1528,16 +1668,19 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
           Text(
             'No Patients Connected',
             style: GoogleFonts.poppins(
-                fontSize: 20, fontWeight: FontWeight.bold),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Text(
             'To start monitoring patient health and medications, ask them to add your caregiver email in their MedReminder app:',
             style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.5),
+              fontSize: 13,
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
@@ -1547,22 +1690,27 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
               color: isDark ? AppColors.surfaceDark : AppColors.background,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.3)),
+                color: AppColors.primary.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.alternate_email_rounded,
-                    size: 18, color: AppColors.primary),
+                const Icon(
+                  Icons.alternate_email_rounded,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: SelectableText(
                     widget.email,
                     style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ],
@@ -1578,11 +1726,14 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('How to connect:',
-                    style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary)),
+                Text(
+                  'How to connect:',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 _howToStep('1', 'Patient opens MedReminder app'),
                 _howToStep('2', 'Goes to Home  →  Family Hub'),
@@ -1609,17 +1760,24 @@ class _EmptyStateCardState extends State<_EmptyStateCard>
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text(num,
-                  style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold)),
+              child: Text(
+                num,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Text(text,
-              style: GoogleFonts.poppins(
-                  fontSize: 12, color: AppColors.textSecondary)),
+          Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -1671,10 +1829,8 @@ class _HireRequestCard extends StatelessWidget {
           ],
           child: PatientDetailScreen(patientLink: tempLink),
         ),
-        transitionsBuilder: (ctx, animation, _, child) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
+        transitionsBuilder: (ctx, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
       ),
     );
   }
@@ -1690,7 +1846,8 @@ class _HireRequestCard extends StatelessWidget {
         final patient = snapshot.data;
         final age = patient?.age ?? 0;
         final gender = patient?.gender ?? 'Not Specified';
-        final medicalSummary = patient?.medicalSummary ?? 'No medical summary available.';
+        final medicalSummary =
+            patient?.medicalSummary ?? 'No medical summary available.';
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -1698,7 +1855,9 @@ class _HireRequestCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.cardTheme.color,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.15),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
@@ -1718,7 +1877,11 @@ class _HireRequestCard extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 24),
+                    child: const Icon(
+                      Icons.person_rounded,
+                      color: AppColors.primary,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -1727,11 +1890,17 @@ class _HireRequestCard extends StatelessWidget {
                       children: [
                         Text(
                           request.patientName,
-                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
                           request.patientEmail,
-                          style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -1744,18 +1913,28 @@ class _HireRequestCard extends StatelessWidget {
                 children: [
                   Text(
                     'Age: ${age > 0 ? age : 'N/A'}',
-                    style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Text(
                     'Gender: $gender',
-                    style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
                 'Medical Summary:',
-                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 4),
               Container(
@@ -1767,14 +1946,21 @@ class _HireRequestCard extends StatelessWidget {
                 ),
                 child: Text(
                   medicalSummary,
-                  style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
               if (request.message != null && request.message!.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
                   'Message:',
-                  style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Container(
@@ -1786,7 +1972,10 @@ class _HireRequestCard extends StatelessWidget {
                   ),
                   child: Text(
                     request.message!,
-                    style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary),
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -1798,11 +1987,18 @@ class _HireRequestCard extends StatelessWidget {
                       onPressed: onReject,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text('Reject', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Reject',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1812,10 +2008,15 @@ class _HireRequestCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text('Accept', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Accept',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                 ],
@@ -1829,7 +2030,10 @@ class _HireRequestCard extends StatelessWidget {
                     icon: const Icon(Icons.info_outline_rounded, size: 18),
                     label: Text(
                       'View Details',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
@@ -1889,7 +2093,11 @@ class _AppointmentCard extends StatelessWidget {
                   color: AppColors.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(Icons.calendar_today_rounded, color: AppColors.secondary, size: 24),
+                child: const Icon(
+                  Icons.calendar_today_rounded,
+                  color: AppColors.secondary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1898,11 +2106,17 @@ class _AppointmentCard extends StatelessWidget {
                   children: [
                     Text(
                       appointment.patientName,
-                      style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       appointment.doctorSpecialty,
-                      style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -1912,18 +2126,29 @@ class _AppointmentCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.access_time_rounded, size: 16, color: AppColors.secondary),
+              Icon(
+                Icons.access_time_rounded,
+                size: 16,
+                color: AppColors.secondary,
+              ),
               const SizedBox(width: 6),
               Text(
                 DateFormat('MMM d, yyyy • h:mm a').format(appointment.dateTime),
-                style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.secondary),
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             appointment.problem,
-            style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -1933,11 +2158,18 @@ class _AppointmentCard extends StatelessWidget {
                   onPressed: onDecline,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
-                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side: BorderSide(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text('Decline', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Decline',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -1947,10 +2179,15 @@ class _AppointmentCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text('Confirm', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Confirm',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
@@ -1982,7 +2219,10 @@ class _ConfirmedAppointmentCard extends StatelessWidget {
             color: AppColors.secondary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(Icons.event_available_rounded, color: AppColors.secondary),
+          child: const Icon(
+            Icons.event_available_rounded,
+            color: AppColors.secondary,
+          ),
         ),
         title: Text(
           appointment.patientName,
@@ -1994,12 +2234,19 @@ class _ConfirmedAppointmentCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               DateFormat('EEE, MMM d • h:mm a').format(appointment.dateTime),
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.secondary, fontSize: 12),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                color: AppColors.secondary,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               appointment.problem,
-              style: GoogleFonts.poppins(color: AppColors.textSecondary, fontSize: 13),
+              style: GoogleFonts.poppins(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -2046,7 +2293,11 @@ class _DashboardNotificationTile extends StatelessWidget {
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.notifications_rounded, color: AppColors.primary, size: 16),
+            child: const Icon(
+              Icons.notifications_rounded,
+              color: AppColors.primary,
+              size: 16,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -2055,12 +2306,18 @@ class _DashboardNotificationTile extends StatelessWidget {
               children: [
                 Text(
                   notification.title,
-                  style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   notification.body,
-                  style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -2073,12 +2330,13 @@ class _DashboardNotificationTile extends StatelessWidget {
 
 // ── Caregiver Profile Helper Widgets ───────────────────────────────────────────
 
-extension _CaregiverDashboardScreenStateHelpers on _CaregiverDashboardScreenState {
+extension _CaregiverDashboardScreenStateHelpers
+    on _CaregiverDashboardScreenState {
   Widget _buildCaregiverProfileCard(UserModel? user) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     if (user == null) return const SizedBox.shrink();
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -2101,9 +2359,15 @@ extension _CaregiverDashboardScreenStateHelpers on _CaregiverDashboardScreenStat
               CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
+                backgroundImage: user.photoUrl != null
+                    ? NetworkImage(user.photoUrl!)
+                    : null,
                 child: user.photoUrl == null
-                    ? const Icon(Icons.person_rounded, size: 36, color: AppColors.primary)
+                    ? const Icon(
+                        Icons.person_rounded,
+                        size: 36,
+                        color: AppColors.primary,
+                      )
                     : null,
               ),
               const SizedBox(width: 16),
@@ -2146,23 +2410,47 @@ extension _CaregiverDashboardScreenStateHelpers on _CaregiverDashboardScreenStat
           const SizedBox(height: 16),
           const Divider(height: 1),
           const SizedBox(height: 16),
-          _profileInfoRow(Icons.local_hospital_outlined, 'Clinic / Hospital', user.clinicName ?? 'N/A'),
-          _profileInfoRow(Icons.location_on_outlined, 'Location', user.location ?? 'N/A'),
-          _profileInfoRow(Icons.school_outlined, 'Qualification', user.qualification ?? 'N/A'),
-          _profileInfoRow(Icons.work_history_outlined, 'Experience', '${user.experience ?? '0'} years'),
-          _profileInfoRow(Icons.phone_android_outlined, 'Phone', user.phoneNumber),
+          _profileInfoRow(
+            Icons.local_hospital_outlined,
+            'Clinic / Hospital',
+            user.clinicName ?? 'N/A',
+          ),
+          _profileInfoRow(
+            Icons.location_on_outlined,
+            'Location',
+            user.location ?? 'N/A',
+          ),
+          _profileInfoRow(
+            Icons.school_outlined,
+            'Qualification',
+            user.qualification ?? 'N/A',
+          ),
+          _profileInfoRow(
+            Icons.work_history_outlined,
+            'Experience',
+            '${user.experience ?? '0'} years',
+          ),
+          _profileInfoRow(
+            Icons.phone_android_outlined,
+            'Phone',
+            user.phoneNumber,
+          ),
           if (user.bio != null && user.bio!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
               'About:',
-              style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               user.bio!,
               style: GoogleFonts.poppins(fontSize: 13, height: 1.4),
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -2177,7 +2465,11 @@ extension _CaregiverDashboardScreenStateHelpers on _CaregiverDashboardScreenStat
           const SizedBox(width: 8),
           Text(
             '$label: ',
-            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textSecondary,
+            ),
           ),
           Expanded(
             child: Text(
@@ -2218,9 +2510,7 @@ extension _CaregiverDashboardScreenStateHelpers on _CaregiverDashboardScreenStat
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
               );
             },
           ),
@@ -2271,7 +2561,10 @@ class _QuickActionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

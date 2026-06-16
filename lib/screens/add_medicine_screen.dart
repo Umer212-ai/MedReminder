@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:thirdly/models/medicine_model.dart';
 import 'package:thirdly/providers/app_providers.dart';
 import 'package:thirdly/utils/app_colors.dart';
 
 class AddMedicineScreen extends StatefulWidget {
-  const AddMedicineScreen({super.key});
+  final MedicineModel? medicine;
+
+  const AddMedicineScreen({super.key, this.medicine});
+
+  bool get isEditing => medicine != null;
 
   @override
   State<AddMedicineScreen> createState() => _AddMedicineScreenState();
@@ -28,6 +33,26 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
   final List<String> _scheduleTimes = [];
 
   static const _types = ['tablet', 'capsule', 'syrup', 'injection', 'drops', 'inhaler'];
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.medicine;
+    if (existing != null) {
+      _nameController.text = existing.name;
+      _dosageController.text = existing.dosage;
+      _medicineType = existing.medicineType;
+      _quantityController.text = existing.quantity.toString();
+      _notesController.text = existing.notes;
+      _doctorController.text = existing.doctorName;
+      _startDate = existing.startDate;
+      _endDate = existing.endDate;
+      _scheduleTimes.addAll(existing.scheduleTimes);
+      if (existing.imageUrl != null && existing.imageUrl!.isNotEmpty) {
+        _imageUrlController.text = existing.imageUrl!;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -101,29 +126,57 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     if (uid == null) return;
 
     final provider = context.read<MedicineProvider>();
-    final ok = await provider.addMedicine(
-      userId: uid,
-      name: _nameController.text.trim(),
-      dosage: _dosageController.text.trim(),
-      medicineType: _medicineType,
-      quantity: int.tryParse(_quantityController.text) ?? 1,
-      scheduleTimes: List.from(_scheduleTimes),
-      startDate: _startDate,
-      endDate: _endDate,
-      notes: _notesController.text.trim(),
-      doctorName: _doctorController.text.trim(),
-      imageUrl: _imageUrlController.text.trim().isEmpty
-          ? null
-          : _imageUrlController.text.trim(),
-      patientName: context.read<AppAuthProvider>().user?.fullName ?? 'Patient',
-    );
+    final patientName =
+        context.read<AppAuthProvider>().user?.fullName ?? 'Patient';
+    final bool ok;
+
+    if (widget.isEditing) {
+      ok = await provider.updateMedicine(
+        medicine: widget.medicine!,
+        name: _nameController.text.trim(),
+        dosage: _dosageController.text.trim(),
+        medicineType: _medicineType,
+        quantity: int.tryParse(_quantityController.text) ?? 1,
+        scheduleTimes: List.from(_scheduleTimes),
+        startDate: _startDate,
+        endDate: _endDate,
+        clearEndDate: _endDate == null,
+        notes: _notesController.text.trim(),
+        doctorName: _doctorController.text.trim(),
+        imageUrl: _imageUrlController.text.trim().isEmpty
+            ? null
+            : _imageUrlController.text.trim(),
+        patientName: patientName,
+      );
+    } else {
+      ok = await provider.addMedicine(
+        userId: uid,
+        name: _nameController.text.trim(),
+        dosage: _dosageController.text.trim(),
+        medicineType: _medicineType,
+        quantity: int.tryParse(_quantityController.text) ?? 1,
+        scheduleTimes: List.from(_scheduleTimes),
+        startDate: _startDate,
+        endDate: _endDate,
+        notes: _notesController.text.trim(),
+        doctorName: _doctorController.text.trim(),
+        imageUrl: _imageUrlController.text.trim().isEmpty
+            ? null
+            : _imageUrlController.text.trim(),
+        patientName: patientName,
+      );
+    }
 
     if (!mounted) return;
     if (ok) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${_nameController.text} saved. Reminder 1 min before each dose.'),
+          content: Text(
+            widget.isEditing
+                ? '${_nameController.text} updated. Reminders rescheduled.'
+                : '${_nameController.text} saved. Reminder 1 min before each dose.',
+          ),
           backgroundColor: AppColors.success,
         ),
       );
@@ -142,7 +195,10 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Add Medicine', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          widget.isEditing ? 'Edit Medicine' : 'Add Medicine',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: Form(
@@ -156,7 +212,8 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
             _field(_dosageController, 'e.g. 500mg', validator: _required),
             _label('Medicine Type'),
             DropdownButtonFormField<String>(
-              value: _medicineType,
+              key: ValueKey(_medicineType),
+              initialValue: _medicineType,
               decoration: _inputDecoration(),
               items: _types.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
               onChanged: (v) => setState(() => _medicineType = v ?? 'tablet'),
@@ -177,7 +234,18 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(_endDate == null ? 'No end date' : DateFormat.yMMMd().format(_endDate!)),
-              trailing: const Icon(Icons.event_rounded, color: AppColors.primary),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_endDate != null)
+                    IconButton(
+                      onPressed: () => setState(() => _endDate = null),
+                      icon: const Icon(Icons.clear_rounded, color: AppColors.error),
+                      tooltip: 'Clear end date',
+                    ),
+                  const Icon(Icons.event_rounded, color: AppColors.primary),
+                ],
+              ),
               onTap: () => _pickDate(isStart: false),
             ),
             _label('Schedule Times * (reminder 1 min before)'),
@@ -222,8 +290,15 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                 ),
                 child: loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : Text('Save & Schedule Reminders',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white)),
+                    : Text(
+                        widget.isEditing
+                            ? 'Update Medicine'
+                            : 'Save & Schedule Reminders',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],

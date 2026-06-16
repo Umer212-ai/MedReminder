@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:thirdly/core/utils/dose_utils.dart';
 import 'package:thirdly/providers/app_providers.dart';
 import 'package:thirdly/providers/health_provider.dart';
-import 'package:thirdly/screens/add_medicine_screen.dart';
+import 'package:thirdly/screens/medicines_screen.dart';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import '../utils/app_colors.dart';
@@ -397,7 +397,7 @@ class HomeTab extends StatelessWidget {
               ],
               const SizedBox(height: 40),
               _buildSectionHeader(context, 'Today\'s Doses', () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const AddMedicineScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const MedicinesScreen()));
               }),
               const SizedBox(height: 12),
               if (total > 0)

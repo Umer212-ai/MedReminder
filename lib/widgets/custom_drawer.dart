@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:thirdly/providers/app_providers.dart';
-import 'package:thirdly/screens/add_medicine_screen.dart';
+import 'package:thirdly/screens/medicines_screen.dart';
 import 'package:thirdly/screens/login_screen.dart';
 import 'package:thirdly/screens/medical_screen.dart';
 import 'package:thirdly/screens/emergency_screen.dart';
@@ -140,10 +140,10 @@ class CustomDrawer extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const AddMedicineScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const MedicinesScreen()));
             },
             icon: const Icon(Icons.medication_rounded, size: 20),
-            label: Text('Add Medicine', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+            label: Text('My Medicines', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.primary,

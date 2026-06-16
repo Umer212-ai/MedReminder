@@ -323,4 +323,73 @@ class MedicineProvider extends ChangeNotifier {
     await _loadCompletionRate(userId);
     await _syncFamilyStats(userId);
   }
+
+  Future<bool> updateMedicine({
+    required MedicineModel medicine,
+    required String name,
+    required String dosage,
+    String medicineType = 'tablet',
+    int quantity = 1,
+    List<String>? scheduleTimes,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool clearEndDate = false,
+    String notes = '',
+    String doctorName = '',
+    String? imageUrl,
+    required String patientName,
+  }) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      final updated = medicine.copyWith(
+        name: name,
+        dosage: dosage,
+        medicineType: medicineType,
+        quantity: quantity,
+        scheduleTimes: scheduleTimes ?? medicine.scheduleTimes,
+        startDate: startDate,
+        endDate: endDate,
+        clearEndDate: clearEndDate,
+        notes: notes,
+        doctorName: doctorName,
+        imageUrl: imageUrl,
+        updatedAt: DateTime.now(),
+      );
+      await _medicineService.updateMedicine(updated);
+      await _scheduler.cancelMedicine(medicine);
+      await _scheduler.scheduleMedicine(medicine: updated, patientName: patientName);
+      await _loadCompletionRate(medicine.userId);
+      await _syncFamilyStats(medicine.userId);
+      _error = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteMedicine({
+    required MedicineModel medicine,
+  }) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      await _scheduler.cancelMedicine(medicine);
+      await _medicineService.deleteMedicine(medicine.id);
+      await _loadCompletionRate(medicine.userId);
+      await _syncFamilyStats(medicine.userId);
+      _error = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
 }

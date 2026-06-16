@@ -6,6 +6,7 @@ import 'package:thirdly/core/utils/dose_utils.dart';
 import 'package:thirdly/models/vital_model.dart';
 import 'package:thirdly/providers/app_providers.dart';
 import 'package:thirdly/providers/health_provider.dart';
+import 'package:thirdly/screens/medicines_screen.dart';
 import 'package:thirdly/widgets/health_add_sheets.dart';
 import '../utils/app_colors.dart';
 
@@ -57,6 +58,89 @@ class MedicalScreen extends StatelessWidget {
             _vitalCard(hr, 'Heart Rate', 'bpm', Icons.favorite_rounded, AppColors.primary),
             const SizedBox(height: 16),
             _vitalCard(sugar, 'Blood Sugar', 'mg/dL', Icons.opacity_rounded, AppColors.secondary),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSectionHeader(context, 'All My Medicines'),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MedicinesScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.edit_note_rounded, size: 18),
+                  label: Text(
+                    'Manage',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'View, edit, or delete your saved medicines',
+              style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            if (medicineProvider.medicines.isEmpty)
+              Text(
+                'No medicines saved yet.',
+                style: GoogleFonts.poppins(color: AppColors.textSecondary),
+              )
+            else
+              ...medicineProvider.medicines.take(3).map((med) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    tileColor: theme.cardTheme.color,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: BorderSide(color: AppColors.textLight.withValues(alpha: 0.1)),
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.medication_rounded, color: AppColors.primary),
+                    ),
+                    title: Text(
+                      med.name,
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    subtitle: Text(
+                      '${med.dosage} • ${med.scheduleTimes.join(', ')}',
+                      style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MedicinesScreen()),
+                      );
+                    },
+                  ),
+                );
+              }),
+            if (medicineProvider.medicines.length > 3)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MedicinesScreen()),
+                    );
+                  },
+                  child: Text(
+                    'View all ${medicineProvider.medicines.length} medicines',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
             const SizedBox(height: 40),
             _buildSectionHeader(context, 'Today\'s Medicines'),
             const SizedBox(height: 16),

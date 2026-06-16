@@ -72,4 +72,38 @@ class MedicineModel {
         'createdAt': Timestamp.fromDate(createdAt),
         'updatedAt': Timestamp.fromDate(updatedAt),
       };
+
+  MedicineModel copyWith({
+    String? name,
+    String? dosage,
+    String? medicineType,
+    int? quantity,
+    List<String>? scheduleTimes,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool clearEndDate = false,
+    String? notes,
+    String? doctorName,
+    String? imageUrl,
+    bool? isActive,
+    DateTime? updatedAt,
+  }) {
+    return MedicineModel(
+      id: id,
+      userId: userId,
+      name: name ?? this.name,
+      dosage: dosage ?? this.dosage,
+      medicineType: medicineType ?? this.medicineType,
+      quantity: quantity ?? this.quantity,
+      scheduleTimes: scheduleTimes ?? this.scheduleTimes,
+      startDate: startDate ?? this.startDate,
+      endDate: clearEndDate ? null : (endDate ?? this.endDate),
+      notes: notes ?? this.notes,
+      doctorName: doctorName ?? this.doctorName,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
