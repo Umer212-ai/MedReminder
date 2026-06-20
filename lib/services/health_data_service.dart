@@ -100,6 +100,14 @@ class HealthDataService {
         .map((s) => s.docs.map(FamilyLinkModel.fromFirestore).toList());
   }
 
+  Stream<List<FamilyLinkModel>> watchFamilyForWatcherEmail(String email) {
+    return _db
+        .collection(FirestorePaths.familyLinks)
+        .where('watcherEmail', isEqualTo: email.trim().toLowerCase())
+        .snapshots()
+        .map((s) => s.docs.map(FamilyLinkModel.fromFirestore).toList());
+  }
+
   Future<void> addFamilyLink({
     required String patientId,
     required String patientName,

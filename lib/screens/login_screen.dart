@@ -42,24 +42,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success) {
       final user = auth.user;
-        if (user != null) {
-          final meds = context.read<MedicineProvider>();
-          final health = context.read<HealthDataProvider>();
-          meds.setPatientName(user.fullName);
-          if (user.role == UserRole.patient) {
-            health.listenForPatient(user.uid);
-            meds.listenToMedicines(user.uid);
-          } else if (user.role == UserRole.caregiver) {
-            health.claimLinksIfNeeded(user);
-            context.read<CaregiverDashboardProvider>().initialize(user.uid);
-          } else {
-            health.claimLinksIfNeeded(user);
-          }
+      if (user != null) {
+        final meds = context.read<MedicineProvider>();
+        final health = context.read<HealthDataProvider>();
+        meds.setPatientName(user.fullName);
+        if (user.role == UserRole.patient) {
+          health.listenForPatient(user.uid);
+          meds.listenToMedicines(user.uid);
+        } else if (user.role == UserRole.caregiver || user.role == UserRole.familyMember) {
+          health.claimLinksIfNeeded(user);
+          context.read<CaregiverDashboardProvider>().initialize(user.uid, user.email);
+        } else {
+          health.claimLinksIfNeeded(user);
         }
+      }
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const RoleHomeScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const RoleHomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -79,9 +80,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter your email first')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter your email first')));
       return;
     }
     final auth = context.read<AppAuthProvider>();
@@ -89,7 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok ? 'Password reset email sent' : (auth.error ?? 'Failed')),
+        content: Text(
+          ok ? 'Password reset email sent' : (auth.error ?? 'Failed'),
+        ),
         backgroundColor: ok ? AppColors.success : AppColors.error,
       ),
     );
@@ -189,7 +192,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       hint: 'you@example.com',
                       icon: Icons.alternate_email_rounded,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Email is required';
+                        if (value == null || value.isEmpty)
+                          return 'Email is required';
                         if (!value.contains('@')) return 'Enter a valid email';
                         return null;
                       },
@@ -204,15 +208,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscure: _obscurePassword,
                       suffix: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                          _obscurePassword
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded,
                           color: AppColors.textLight,
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Password is required';
-                        if (value.length < 6) return 'At least 6 characters required';
+                        if (value == null || value.isEmpty)
+                          return 'Password is required';
+                        if (value.length < 6)
+                          return 'At least 6 characters required';
                         return null;
                       },
                     ),
@@ -223,7 +233,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: _forgotPassword,
                         child: Text(
                           'Forgot Password?',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
@@ -240,10 +253,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
                           child: auth.isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
                               : Text(
                                   'Sign In',
                                   style: GoogleFonts.poppins(
@@ -263,7 +280,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'Social Login',
-                            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textLight),
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: AppColors.textLight,
+                            ),
                           ),
                         ),
                         const Expanded(child: Divider()),
@@ -272,7 +292,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 32),
                     GestureDetector(
                       onTap: auth.isLoading ? null : _googleSignIn,
-                      child: _buildSocialButton(context, 'G', Colors.red.withValues(alpha: 0.1)),
+                      child: _buildSocialButton(
+                        context,
+                        'G',
+                        Colors.red.withValues(alpha: 0.1),
+                      ),
                     ),
                     const SizedBox(height: 48),
                     Row(
@@ -285,11 +309,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextButton(
                           onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
                           ),
                           child: Text(
                             'Create Account',
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 14),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ],
@@ -359,7 +388,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: Text(
             label,
-            style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

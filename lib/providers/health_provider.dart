@@ -62,10 +62,16 @@ class HealthDataProvider extends ChangeNotifier {
     });
   }
 
-  void listenForWatcher(String watcherId) {
+  void listenForWatcher(String watcherId, String email) {
     _cancelAll();
-    _watcherSub = _service.watchFamilyForWatcher(watcherId).listen((v) {
+    _watcherSub = _service.watchFamilyForWatcherEmail(email).listen((v) {
       _watchedPatients = v;
+      // Automatically claim any unclaimed links
+      for (final link in v) {
+        if (link.watcherId == null || link.watcherId!.isEmpty) {
+          _service.claimFamilyLinks(watcherId, email);
+        }
+      }
       notifyListeners();
     });
   }
@@ -73,7 +79,7 @@ class HealthDataProvider extends ChangeNotifier {
   Future<void> claimLinksIfNeeded(UserModel user) async {
     if (user.role == UserRole.familyMember || user.role == UserRole.caregiver) {
       await _service.claimFamilyLinks(user.uid, user.email);
-      listenForWatcher(user.uid);
+      listenForWatcher(user.uid, user.email);
     }
   }
 

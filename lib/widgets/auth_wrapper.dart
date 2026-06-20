@@ -47,9 +47,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (user.role == UserRole.patient) {
       health.listenForPatient(user.uid);
       meds.listenToMedicines(user.uid);
-    } else if (user.role == UserRole.caregiver) {
+    } else if (user.role == UserRole.caregiver || user.role == UserRole.familyMember) {
       health.claimLinksIfNeeded(user);
-      context.read<CaregiverDashboardProvider>().initialize(user.uid);
+      context.read<CaregiverDashboardProvider>().initialize(user.uid, user.email);
     } else {
       health.claimLinksIfNeeded(user);
     }

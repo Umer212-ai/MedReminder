@@ -73,9 +73,11 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
     // Initialize CaregiverDashboardProvider with caregiver's UID
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        final uid = context.read<AppAuthProvider>().uid;
-        if (uid != null) {
-          context.read<CaregiverDashboardProvider>().initialize(uid);
+        final auth = context.read<AppAuthProvider>();
+        final uid = auth.uid;
+        final email = auth.user?.email;
+        if (uid != null && email != null) {
+          context.read<CaregiverDashboardProvider>().initialize(uid, email);
         }
       }
     });
@@ -252,6 +254,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
     try {
       await _appointmentService.confirmAppointment(appointment.id);
       if (mounted) {
+        setState(() {
+          _appointments = _appointments.where((a) => a.id != appointment.id).toList();
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -277,6 +282,9 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen>
     try {
       await _appointmentService.declineAppointment(appointment.id);
       if (mounted) {
+        setState(() {
+          _appointments = _appointments.where((a) => a.id != appointment.id).toList();
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Appointment declined'),

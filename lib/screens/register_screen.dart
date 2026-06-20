@@ -62,9 +62,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (user.role == UserRole.patient) {
           health.listenForPatient(user.uid);
           meds.listenToMedicines(user.uid);
-        } else if (user.role == UserRole.caregiver) {
+        } else if (user.role == UserRole.caregiver || user.role == UserRole.familyMember) {
           health.claimLinksIfNeeded(user);
-          context.read<CaregiverDashboardProvider>().initialize(user.uid);
+          context.read<CaregiverDashboardProvider>().initialize(
+            user.uid,
+            user.email,
+          );
         } else {
           health.claimLinksIfNeeded(user);
         }
@@ -123,40 +126,80 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 32),
                 _field(_nameController, 'Full Name', Icons.person_outline),
                 const SizedBox(height: 16),
-                _field(_emailController, 'Email', Icons.email_outlined,
-                    keyboard: TextInputType.emailAddress),
+                _field(
+                  _emailController,
+                  'Email',
+                  Icons.email_outlined,
+                  keyboard: TextInputType.emailAddress,
+                ),
                 const SizedBox(height: 16),
-                _field(_passwordController, 'Password', Icons.lock_outline,
-                    obscure: _obscurePassword,
-                    suffix: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    )),
+                _field(
+                  _passwordController,
+                  'Password',
+                  Icons.lock_outline,
+                  obscure: _obscurePassword,
+                  suffix: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                _field(_ageController, 'Age', Icons.cake_outlined,
-                    keyboard: TextInputType.number),
+                _field(
+                  _ageController,
+                  'Age',
+                  Icons.cake_outlined,
+                  keyboard: TextInputType.number,
+                ),
                 const SizedBox(height: 16),
-                _field(_phoneController, 'Phone Number', Icons.phone_outlined,
-                    keyboard: TextInputType.phone),
+                _field(
+                  _phoneController,
+                  'Phone Number',
+                  Icons.phone_outlined,
+                  keyboard: TextInputType.phone,
+                ),
                 const SizedBox(height: 16),
-                _field(_emergencyController, 'Emergency Contact', Icons.emergency_outlined,
-                    keyboard: TextInputType.phone),
+                _field(
+                  _emergencyController,
+                  'Emergency Contact',
+                  Icons.emergency_outlined,
+                  keyboard: TextInputType.phone,
+                ),
                 const SizedBox(height: 20),
-                Text('Role', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                Text(
+                  'Role',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<UserRole>(
                   value: _role,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: theme.cardTheme.color,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   items: const [
-                    DropdownMenuItem(value: UserRole.patient, child: Text('Patient')),
-                    DropdownMenuItem(value: UserRole.familyMember, child: Text('Family Member')),
-                    DropdownMenuItem(value: UserRole.caregiver, child: Text('Caregiver')),
+                    DropdownMenuItem(
+                      value: UserRole.patient,
+                      child: Text('Patient'),
+                    ),
+                    DropdownMenuItem(
+                      value: UserRole.familyMember,
+                      child: Text('Family Member'),
+                    ),
+                    DropdownMenuItem(
+                      value: UserRole.caregiver,
+                      child: Text('Caregiver'),
+                    ),
                   ],
-                  onChanged: (v) => setState(() => _role = v ?? UserRole.patient),
+                  onChanged: (v) =>
+                      setState(() => _role = v ?? UserRole.patient),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -165,11 +208,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: auth.isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                     child: auth.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : Text('Register', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                        : Text(
+                            'Register',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
               ],

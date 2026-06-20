@@ -345,12 +345,19 @@ class CaregiverDashboardProvider extends ChangeNotifier {
     return 'Stable';
   }
 
-  void initialize(String watcherId) {
+  void initialize(String watcherId, String email) {
     _watcherSubscription?.cancel();
     _isLoading = true;
     notifyListeners();
 
-    _watcherSubscription = _healthService.watchFamilyForWatcher(watcherId).listen((links) {
+    _watcherSubscription = _healthService.watchFamilyForWatcherEmail(email).listen((links) {
+      // Automatically claim any unclaimed links
+      for (final link in links) {
+        if (link.watcherId == null || link.watcherId!.isEmpty) {
+          _healthService.claimFamilyLinks(watcherId, email);
+        }
+      }
+
       final activeIds = links.map((l) => l.patientId).toSet();
 
       // Clean up unsubscribed patients

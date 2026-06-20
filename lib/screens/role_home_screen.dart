@@ -10,6 +10,7 @@ import 'package:thirdly/utils/app_colors.dart';
 
 import 'caregiver_dashboard_screen.dart';
 import 'caregiver_profile_setup_screen.dart';
+import 'family_dashboard_screen.dart';
 
 /// Routes each user role to the correct home experience.
 class RoleHomeScreen extends StatelessWidget {
@@ -23,10 +24,7 @@ class RoleHomeScreen extends StatelessWidget {
     
     switch (role) {
       case UserRole.familyMember:
-        return const _WatcherHomeShell(
-          title: 'Family Dashboard',
-          icon: Icons.family_restroom_rounded,
-        );
+        return const FamilyDashboardScreen();
       case UserRole.caregiver:
         final isProfileComplete = user != null &&
             user.fullName.isNotEmpty &&
